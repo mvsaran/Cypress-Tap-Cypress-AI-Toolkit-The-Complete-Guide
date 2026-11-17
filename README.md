@@ -1,6 +1,8 @@
 # Cypress Tap & Cypress AI Toolkit: The Complete Guide
 
 > **A beginner-friendly, SDET-grade guide explaining how AI coding agents (Antigravity, Claude Code, Cursor, Windsurf) autonomously run, diagnose, inspect, and self-heal Cypress tests using the official Cypress AI Toolkit and Cypress Tap.**
+>
+> 📖 **Official Cypress Documentation Reference:** [https://docs.cypress.io/app/tooling/cypress-tap](https://docs.cypress.io/app/tooling/cypress-tap)
 
 ---
 
@@ -21,6 +23,7 @@
    - [Gotcha 2: Node.js 24 Libuv Async Assertion on Windows](#gotcha-2-nodejs-24-libuv-async-assertion-on-windows)
    - [Gotcha 3: The "False Pass" Trap](#gotcha-3-the-false-pass-trap)
 8. [Project Structure & Test Suites](#8-project-structure--test-suites)
+9. [Official Documentation & References](#9-official-documentation--references)
 
 ---
 
@@ -301,3 +304,13 @@ npm run cypress:run:chrome
 ```
 
 All 21 production scenarios across SauceDemo will execute and pass cleanly.
+
+---
+
+## 9. Official Documentation & References
+
+- 📘 **Cypress Tap Official Documentation:** [https://docs.cypress.io/app/tooling/cypress-tap](https://docs.cypress.io/app/tooling/cypress-tap)
+- 🤖 **Cypress AI Toolkit Repository:** [https://github.com/cypress-io/ai-toolkit](https://github.com/cypress-io/ai-toolkit)
+- 📦 **Cypress Skills Catalog:** [https://skills.sh/cypress-io/ai-toolkit](https://skills.sh/cypress-io/ai-toolkit)
+- 🌐 **SauceDemo Application Under Test:** [https://www.saucedemo.com/](https://www.saucedemo.com/)
+
