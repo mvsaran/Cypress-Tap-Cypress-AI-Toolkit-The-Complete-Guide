@@ -1,0 +1,35 @@
+{
+  "name": "cypress-tap-saucedemo",
+  "version": "1.0.0",
+  "description": "AI-Powered E2E Automation Demo project showcasing Cypress Tap with SauceDemo",
+  "main": "index.js",
+  "scripts": {
+    "cypress:open": "cypress open --e2e --browser chrome",
+    "cypress:open:edge": "cypress open --e2e --browser edge",
+    "cypress:run": "cypress run",
+    "cypress:run:chrome": "cypress run --browser chrome",
+    "tap:status": "cypress tap status --json",
+    "tap:specs": "cypress tap specs --json",
+    "tap:reporter": "cypress tap reporter --json",
+    "tap:dom": "cypress tap dom",
+    "tap:aria": "cypress tap aria",
+    "tap:inspect": "cypress tap inspect",
+    "tap:pin": "cypress tap pin",
+    "tap:command": "cypress tap command",
+    "postinstall": "node scripts/patch-cypress-exit.js"
+  },
+  "keywords": [
+    "cypress",
+    "cypress-tap",
+    "ai-agent",
+    "sdet",
+    "automation",
+    "saucedemo",
+    "e2e-testing"
+  ],
+  "author": "Antigravity SDET Team",
+  "license": "MIT",
+  "devDependencies": {
+    "cypress": "^16.3.0"
+  }
+}

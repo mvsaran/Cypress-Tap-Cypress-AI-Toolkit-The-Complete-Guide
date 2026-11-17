@@ -1,0 +1,9 @@
+# Windsurf Rules: Cypress Tap
+
+When running, debugging, or fixing Cypress tests, follow the Cypress Tap workflow documented in AGENTS.md:
+- Check session: `npx cypress tap status --json`
+- Run spec: `npx cypress tap run <spec-path>`
+- Poll status until verdict is reached (`"passed"` or `"failed"` with updated `startedAt`)
+- Inspect errors: `npx cypress tap reporter --test-id <id> --json`
+- Inspect DOM: `npx cypress tap pin --test-id <id> --command-id <cmdId> --at after`, query with `npx cypress tap dom -e "<selector>"`, and clear pin with `npx cypress tap pin --clear`
+- Verify fix: Re-run the spec and confirm green pass.

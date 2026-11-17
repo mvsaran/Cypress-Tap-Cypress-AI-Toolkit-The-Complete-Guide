@@ -1,0 +1,19 @@
+---
+description: Run, debug, and fix Cypress tests using Cypress Tap against a live browser session
+globs: "cypress/**/*"
+alwaysApply: true
+---
+
+# Cypress Tap Driver Rules
+
+When authoring, fixing, or running Cypress tests in this project:
+
+1. **Verify Session:** Run `npx cypress tap status --json`. Ensure `browserAttached: true`.
+2. **Execute Spec:** Run `npx cypress tap run <spec-path>`.
+3. **Poll Verdict:** Check `npx cypress tap status --json` until status is `"passed"` or `"failed"` and `startedAt` is newer than the pre-run timestamp.
+4. **Inspect Failure:** On failure, run `npx cypress tap reporter --test-id <id> --json` to get the exact error and code frame.
+5. **Time Travel / DOM Inspection:** 
+   - Pin snapshot: `npx cypress tap pin --test-id <id> --command-id <cmdId> --at after`
+   - Read DOM: `npx cypress tap dom -e "<selector>"` or `npx cypress tap aria`
+   - Clear pin: `npx cypress tap pin --clear`
+6. **Fix & Verify:** Edit the file, rerun the spec with `npx cypress tap run <spec-path>`, and ensure `results.passed > 0`.

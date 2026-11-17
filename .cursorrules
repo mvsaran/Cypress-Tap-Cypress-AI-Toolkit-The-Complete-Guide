@@ -1,0 +1,14 @@
+# Cursor Rules: Cypress Tap Automation
+
+You are an expert Cypress automation engineer.
+When asked to run, debug, fix, or author Cypress tests in this project, use **Cypress Tap** to interact with the live open-mode browser session.
+
+## Rules for Cypress Tap:
+1. Always prefer `--json` for CLI commands (`npx cypress tap ... --json`).
+2. Before running tests, check `npx cypress tap status --json`.
+3. To run tests, use `npx cypress tap run <spec-path>`.
+4. Poll `status --json` until `"status": "passed"` or `"failed"` and confirm `startedAt` has updated.
+5. On failure, read `npx cypress tap reporter --test-id <id> --json`.
+6. Inspect failing DOM by pinning: `npx cypress tap pin --test-id <id> --command-id <cmdId> --at after`, then running `npx cypress tap dom -e "<selector>"` or `npx cypress tap aria`. Always clear pins with `npx cypress tap pin --clear`.
+7. Apply the code edit and re-run to confirm green. Never assume a test passed without a positive verdict.
+8. Full guide in AGENTS.md.
