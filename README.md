@@ -12,7 +12,7 @@
 2. [Who Does What? (The Mental Model)](#2-who-does-what-the-mental-model)
 3. [Key Concepts: Cypress AI Toolkit vs. Cypress Tap](#3-key-concepts-cypress-ai-toolkit-vs-cypress-tap)
 4. [Step-by-Step Setup Guide (From Scratch)](#4-step-by-step-setup-guide-from-scratch)
-   - [Step 1: Install Dependencies](#step-1-install-dependencies)
+   - [Step 1: Install Dependencies & Cypress](#step-1-install-dependencies--cypress)
    - [Step 2: Install the Cypress AI Skill](#step-2-install-the-cypress-ai-skill)
    - [Step 3: Agent Configuration (How Any Agent Connects)](#step-3-agent-configuration-how-any-agent-connects)
    - [Step 4: Launch Cypress Open Mode (Once per Session)](#step-4-launch-cypress-open-mode-once-per-session)
@@ -22,6 +22,11 @@
    - [Gotcha 1: ELECTRON_RUN_AS_NODE Conflict](#gotcha-1-electron_run_as_node-conflict)
    - [Gotcha 2: Node.js 24 Libuv Async Assertion on Windows](#gotcha-2-nodejs-24-libuv-async-assertion-on-windows)
    - [Gotcha 3: The "False Pass" Trap](#gotcha-3-the-false-pass-trap)
+   - [Gotcha 4: Status Shows "not connected"](#gotcha-4-status-shows-not-connected)
+   - [Gotcha 5: Status Shows "browser not selected"](#gotcha-5-status-shows-browser-not-selected)
+   - [Gotcha 6: Ambiguous Selector Matches in DOM Inspection](#gotcha-6-ambiguous-selector-matches-in-dom-inspection)
+   - [Gotcha 7: SPEC_IN_PROGRESS Error When Querying DOM](#gotcha-7-spec_in_progress-error-when-querying-dom)
+   - [Gotcha 8: Stale Status Verdicts & Run ID Race Condition](#gotcha-8-stale-status-verdicts--run-id-race-condition)
 8. [Project Structure & Test Suites](#8-project-structure--test-suites)
 9. [Official Documentation & References](#9-official-documentation--references)
 
@@ -89,12 +94,19 @@ To understand how this works, keep this simple division of roles in mind:
 
 ## 4. Step-by-Step Setup Guide (From Scratch)
 
-### Step 1: Install Dependencies
-Clone this repository and install packages:
+### Step 1: Install Dependencies & Cypress
+Clone this repository and run the setup commands:
+
 ```bash
+# 1. Install repository dependencies
 npm install
+
+# 2. Ensure Cypress is installed and verified (Cypress v15.21.0+ is required for tap)
+npm install --save-dev cypress@latest
+npx cypress verify
 ```
-*(Our automated `postinstall` script will automatically apply our Windows libuv patch for clean terminal exits).*
+
+> **Note on Windows Clean Exit:** Our automated `postinstall` script runs automatically during `npm install` to apply the Windows libuv patch for clean terminal exits.
 
 ### Step 2: Install the Cypress AI Skill
 To give your AI agents the official skills to drive Cypress Tap:
@@ -263,6 +275,39 @@ Use these commands (add `--json` for machine-readable output):
 * **Symptom:** `status --json` reports `"status": "passed"`, but no tests ran.
 * **Cause:** If a spec file has syntax errors or skipped tests, Cypress marks the run as passed with `results.passed == 0`.
 * **Rule:** Always assert that `status === 'passed'` AND `results.passed > 0`.
+
+### Gotcha 4: Status Shows "not connected"
+* **Symptom:** `npx cypress tap status --json` returns `"status": "not connected"` with exit code 0.
+* **Cause:** Cypress interactive open mode (`cypress open`) has not been started, or was closed.
+* **Fix:** Start Cypress in open mode with an attached Chromium browser:
+  ```powershell
+  $env:ELECTRON_RUN_AS_NODE = $null; $env:CYPRESS_AGENT_MODE = "1"
+  Start-Process -FilePath "npx" -ArgumentList "cypress open --e2e --browser chrome --project ." -WindowStyle Minimized
+  ```
+
+### Gotcha 5: Status Shows "browser not selected"
+* **Symptom:** Status reports `"status": "browser not selected"`, `"browserAttached": false`.
+* **Cause:** Cypress was started without `--browser chrome` or `--e2e`, so it is sitting on the browser selection screen.
+* **Fix:** Dispatch any spec with `npx cypress tap run <spec>` (which will automatically launch Chrome for you), or launch Cypress with explicit `--e2e --browser chrome` flags.
+
+### Gotcha 6: Ambiguous Selector Matches in DOM Inspection
+* **Symptom:** `npx cypress tap dom -e "<selector>"` exits with code 1 and lists multiple matched elements.
+* **Cause:** `cypress tap dom`, `aria`, and `inspect` require exactly one element to inspect HTML and styles.
+* **Fix:** Narrow the selector (e.g. use `:first-child`, specific IDs, or scoped parent containers), or run `npx cypress tap aria` to explore the accessibility tree hierarchy.
+
+### Gotcha 7: SPEC_IN_PROGRESS Error When Querying DOM
+* **Symptom:** Commands like `dom`, `aria`, `inspect`, or `pin` fail with `SPEC_IN_PROGRESS`.
+* **Cause:** Attempted to read the app DOM while tests were still actively running.
+* **Fix:** Wait for the test to reach a terminal status (`"passed"` or `"failed"`) before reading the DOM:
+  ```bash
+  # Always verify status is passed or failed first
+  npx cypress tap status --json
+  ```
+
+### Gotcha 8: Stale Status Verdicts & Run ID Race Condition
+* **Symptom:** Reading `status --json` right after dispatching `run` returns the previous run's verdict.
+* **Cause:** `cypress tap run` is asynchronous and returns immediately before the new run starts in the browser.
+* **Fix:** Always record the baseline `startedAt` timestamp before triggering a re-run, and poll `status --json` until `startedAt` changes to a newer value.
 
 ---
 
